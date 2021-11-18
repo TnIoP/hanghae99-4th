@@ -30,14 +30,14 @@
             let tempDate = new Date()
             $.ajax({
                 type: "POST",
-                url: `/api/board/post`,
+                url: `/api/post`,
                 data: {
                     name: $('#name').val(),
                     pw: $('#pw').val(),
                     title: $('#title').val(),
                     text: $('#text').val(),
                     date: tempDate.getFullYear() + '.' + (tempDate.getMonth() + 1) + '.' + tempDate.getDate()
-                        + ' ' + tempDate.getHours() + ':' + tempDate.getMinutes()
+                        + ' ' + tempDate.getHours() + ':' + tempDate.getMinutes() + ':' + tempDate.getSeconds()
                 },
 
                 success: function (response) {
@@ -73,7 +73,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <button type="submit" onclick="addPost()">글쓰기</button>
+                <button class="btn btn-primary" type="submit" onclick="addPost()">글쓰기</button>
             </td>
         </tr>
     </table>
