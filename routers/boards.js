@@ -4,20 +4,53 @@ const Posts = require("../schemas/Posts");
 
 const router = express.Router();
 
-router.get("/datail/:postId", async (req, res, next) => {
+router.delete("/modify/:postId", async (req, res) => {
+    const { postId } = req.params;
+    const  { pw }  = req.body;
+
+    let posts = await Posts.findOne({ postId });
+    
+    if(posts.pw == pw){
+      await Posts.deleteOne({ postId });
+      res.send({ result: "success" });
+    }else {
+        res.send({ result: "fail" });
+    }
+  })
+
+router.post("/modify/:postId", async (req, res) => { // post
+    const { postId, name, title, text, pw } = req.body;
+
+    let posts = await Posts.findOne({ postId });
+
+    if (posts.pw == pw) {
+        await Posts.updateOne({ postId }, { $set: { name:name } });
+        await Posts.updateOne({ postId }, { $set: { title:title } });
+        await Posts.updateOne({ postId }, { $set: { text:text } });
+        res.send({ result: "success" });
+    } else {
+        res.send({ result: "fail" });
+    }
+});
+
+router.get("/modify/:postId", async (req, res) => {
     try {
         const { postId } = req.params;
-
         let posts = await Posts.findOne({ postId });
-        console.log(req.params)
-        res.json({ list: posts });
-
+        res.json(posts);
     } catch (err) {
         console.error(err);
-        next(err);
-
     }
+});
 
+router.get("/detail/:postId", async (req, res) => {
+    try {
+        const { postId } = req.params;
+        let posts = await Posts.findOne({ postId });
+        res.json(posts);
+    } catch (err) {
+        console.error(err);
+    }
 });
 
 router.get("/board", async (req, res) => { // get

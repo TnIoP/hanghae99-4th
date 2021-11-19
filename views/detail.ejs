@@ -29,11 +29,9 @@
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
         const postId = urlParams.get("postId");
-        console.log(postId)
-
+ 
         $(document).ready(function () {
             getPosts();
-
         });
 
         function getPosts() {
@@ -42,53 +40,45 @@
                 url: `/api/detail/${postId}`,
                 data: {},
                 success: function (response) {
-                    console.log(response)
                     let posts = response;
-                    $("#name").text(posts["name"]);
-                    $("#title").text(posts["title"]);
-                    $("#text").text(posts["text"]);
-                    console.log(response)
-
+                    maketb(posts);
                 }
             });
         }
 
-        function postModify() {
-
-        }
-
-        function postDelete() {
-
+        function maketb(list) {
+            let tempHtml = `<thead>
+                                <tr class="table-active">
+                                    <th style="width: 60%">[제목] ${list["title"]}</th>
+                                    <th style="width: 40%" class="text-right">날짜 :${list.date}
+                                    </th>
+                                </tr>
+                                <tr class="table-active">
+                                    <th>[작성자명] ${list["name"]}</th>
+                                    <th class="text-right"><a href="/modify?postId=${list["postId"]}">수정하기</a></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div>${list["text"]}</div>
+                                    </td>
+                                </tr>
+                            </tbody>`;
+            $("#postDetail").append(tempHtml);
         }
     </script>
     <title>게시글 조회 페이지</title>
 </head>
 
 <body>
+    <div class="container my-1">
+        <div class="row">
+            <table class="table" id="postDetail">
 
-    <table border="1">
-        <tr>
-            <td>작성자</td>
-            <td><input type="text" id="name" /></td>
-        </tr>
-        <tr>
-            <td>제목</td>
-            <td><input type="text" id="title" /></td>
-        </tr>
-        <tr>
-            <td>내용</td>
-            <td><textarea id="text" cols="30" rows="10"></textarea></td>
-        </tr>
-        <tr>
-            <td>패스워드</td>
-            <td><input type="password" id="pw" /></td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <button class="btn btn-primary" type="submit" onclick="postModify()">수정</button>
-                <button class="btn btn-primary" type="submit" onclick="postDelete()">삭제</button>
-            </td>
-        </tr>
+            </table>
+        </div>
+    </div>
     </table>
 
 </body>

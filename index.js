@@ -27,6 +27,10 @@ app.get('/detail', (req, res) => {
   res.render('detail');
 })
 
+app.get('/modify', (req, res) => {
+  res.render('modify');
+})
+
 app.listen(port, () => {
   console.log(`listening at http://localhost:${port}`)
 })
