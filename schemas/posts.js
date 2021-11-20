@@ -9,8 +9,7 @@ const postsSchema = new Schema({
     },
     name: {
         type: String,
-        required: true,
-
+        required: true
     },
     pw: {
         type: String,
@@ -19,7 +18,6 @@ const postsSchema = new Schema({
     title: {
         type: String,
         required: true
-
     },
     text: {
         type: String,
