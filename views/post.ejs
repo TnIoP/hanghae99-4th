@@ -31,28 +31,33 @@
 
 <script>
     function addPost() {
-        let tempDate = new Date()
-        $.ajax({
-            type: "POST",
-            url: `/api/post`,
-            data: {
-                name: $('#name').val(),
-                pw: $('#pw').val(),
-                title: $('#title').val(),
-                text: $('#text').val(),
-                date: tempDate.getFullYear() + '.' + (tempDate.getMonth() + 1) + '.' + tempDate.getDate()
-                    + ' ' + tempDate.getHours() + ':' + tempDate.getMinutes() + ':' + tempDate.getSeconds()
-            },
+        if (($('#name').val() != "") && ($('#pw').val() != "") &&
+            ($('#title').val() != "") && ($('#text').val() != "")) {
+            let tempDate = new Date()
+            $.ajax({
+                type: "POST",
+                url: `/api/post`,
+                data: {
+                    name: $('#name').val(),
+                    pw: $('#pw').val(),
+                    title: $('#title').val(),
+                    text: $('#text').val(),
+                    date: tempDate.getFullYear() + '.' + (tempDate.getMonth() + 1) + '.' + tempDate.getDate()
+                        + ' ' + tempDate.getHours() + ':' + tempDate.getMinutes() + ':' + tempDate.getSeconds()
+                },
 
-            success: function (response) {
-                if (response["result"] == "success") {
-                    alert("저장되었습니다.");
-                    window.location.href = "/"
+                success: function (response) {
+                    if (response["result"] == "success") {
+                        alert("저장되었습니다.");
+                        window.location.href = "/"
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            alert("입력칸을 모두 채워주세요.");
+        }
     }
-    
+
 </script>
 
 <body>

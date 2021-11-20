@@ -55,26 +55,31 @@
     }
 
     function postModify() {
-        $.ajax({
-            type: "POST",
-            url: `/api/modify/${postId}`,
-            data: {
-                postId: postId,
-                name: $('#name').val(),
-                title: $('#title').val(),
-                text: $('#text').val(),
-                pw: $('#pw').val()
-            },
+        if (($('#name').val() != "") && ($('#pw').val() != "") &&
+            ($('#title').val() != "") && ($('#text').val() != "")) {
+            $.ajax({
+                type: "POST",
+                url: `/api/modify/${postId}`,
+                data: {
+                    postId: postId,
+                    name: $('#name').val(),
+                    title: $('#title').val(),
+                    text: $('#text').val(),
+                    pw: $('#pw').val()
+                },
 
-            success: function (response) {
-                if (response["result"] == "success") {
-                    alert("저장되었습니다.");
-                    window.location.href = "/"
+                success: function (response) {
+                    if (response["result"] == "success") {
+                        alert("저장되었습니다.");
+                        window.location.href = "/"
+                    }
+                    else
+                        alert("비밀번호가 틀렸습니다.");
                 }
-                else
-                    alert("비밀번호가 틀렸습니다.");
-            }
-        });
+            });
+        } else {
+            alert("입력칸을 모두 채워주세요.");
+        }
     }
 
 
