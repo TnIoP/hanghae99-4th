@@ -19,34 +19,33 @@ const router = express.Router();
 
 const postUsersSchema = Joi.object({
   nickname: Joi.string().required(),
-  email: Joi.string().email().required(),
   password: Joi.string().required(),
-  confirmPassword: Joi.string().required(),
 });
 
-router.post('/users', async (req, res) => {
+router.post('/users', async (req, res) => { // 회원가입
   try {
-    const { nickname, email, password, confirmPassword } =
+    const { nickname, password } =
       await postUsersSchema.validateAsync(req.body);
 
-    if (password !== confirmPassword) {
-      res.status(400).send({
-        errorMessage: '패스워드가 패스워드 확인란과 동일하지 않습니다.',
-      });
-      return; // 이벤트 핸들러에서 나가기 때문에 밑에 코드는 실행 안됨 (예외처리)
-    }
-
     const existUsers = await User.find({
-      $or: [{ email }, { nickname }], // 맞는 것이 하나라도 있는지 확인
+      nickname,
     });
     if (existUsers.length) {
       res.status(400).send({
-        errorMessage: '이미 가입된 이메일 또는 닉네임이 있습니다.',
+        errorMessage: '이미 가입된 닉네임이 있습니다.',
       });
       return; // 에러가 났으면 이미 끝난 것 (위와 같이 예외처리)
     }
 
-    const user = new User({ email, nickname, password });
+    const recentUserId = await User.find().sort("-userId").limit(1);
+    let userId = 1;
+    if (recentUserId.length !== 0) {
+        userId = recentList[0]["userId"] + 1; // 새로 작성된 Id의 key값+1 (중복제거를 위함)
+    }
+
+    let createdAt = new Date();
+
+    const user = new User({ createdAt, nickname, password, userId });
     await user.save();
 
     res.status(201).send({}); // 응답값이 없어도 되지만, restAPI원칙에 따르면 created라는 201 status코드가 있음
@@ -59,18 +58,18 @@ router.post('/users', async (req, res) => {
 });
 
 const postAuthSchema = Joi.object({
-  email: Joi.string().email().required(),
+  nickname: Joi.string().required(),
   password: Joi.string().required(),
 });
-router.post('/auth', async (req, res) => {
+router.post('/auth', async (req, res) => { // 로그인 (토큰발급)
   try {
-    const { email, password } = await postAuthSchema.validateAsync(req.body);
+    const { nickname, password } = await postAuthSchema.validateAsync(req.body);
 
-    const user = await User.findOne({ email, password }).exec();
+    const user = await User.findOne({ nickname, password }).exec();
 
     if (!user) {
       res.status(400).send({
-        errorMessage: '이메일 또는 패스워드가 잘못됐습니다.',
+        errorMessage: '닉네임 또는 패스워드가 잘못됐습니다.',
       });
       return;
     }
@@ -96,123 +95,27 @@ router.get('/users/me', authMiddleware, async (req, res) => {
   });
 });
 
-/**
- * 내가 가진 장바구니 목록을 전부 불러온다.
- */
-router.get('/goods/cart', authMiddleware, async (req, res) => {
-  const { userId } = res.locals.user;
-
-  const cart = await Cart.find({
-    userId,
-  }).exec();
-
-  const goodsIds = cart.map((c) => c.goodsId);
-
-  // 루프 줄이기 위해 Mapping 가능한 객체로 만든것
-  const goodsKeyById = await Goods.find({
-    where: {
-      goodsId: goodsIds,
-    },
-  })
-    .exec()
-    .then((goods) =>
-      goods.reduce(
-        (prev, g) => ({
-          ...prev,
-          [g.goodsId]: g,
-        }),
-        {}
-      )
-    );
-
-  res.send({
-    cart: cart.map((c) => ({
-      quantity: c.quantity,
-      goods: goodsKeyById[c.goodsId],
-    })),
-  });
+router.get("/posts", async (req, res) => { // 전체 게시글 목록 조회
+  const post = await Posts.find({}).sort("-postId"); // 게시글을 작성 날짜 기준으로 내림차순 정렬
+  res.json(post);
 });
 
-/**
- * 장바구니에 상품 담기.
- * 장바구니에 상품이 이미 담겨있으면 갯수만 수정한다.
- */
-router.put('/goods/:goodsId/cart', authMiddleware, async (req, res) => {
-  const { userId } = res.locals.user;
-  const { goodsId } = req.params;
-  const { quantity } = req.body;
-
-  const existsCart = await Cart.findOne({
-    userId,
-    goodsId,
-  }).exec();
-
-  if (existsCart) {
-    existsCart.quantity = quantity;
-    await existsCart.save();
-  } else {
-    const cart = new Cart({
-      userId,
-      goodsId,
-      quantity,
-    });
-    await cart.save();
+router.post('/posts', authMiddleware, async (req, res) => { // 게시글 등록
+  const { nickname, userId } = res.locals.user;
+  const { title, content } = req.body;
+  const recentList = await Posts.find().sort("-postId").limit(1); // 마지막 등록된 게시글의 key값 가져오기
+  let postId = 1;
+  if (recentList.length !== 0) {
+      postId = recentList[0]["postId"] + 1; // 새로 작성된 게시글의 key값+1 (중복제거를 위함)
   }
 
-  // NOTE: 성공했을때 딱히 정해진 응답 값이 없다.
-  res.send({});
-});
+  let createdAt = new Date();
+  let updatedAt = new Date();
 
-/**
- * 장바구니 항목 삭제
- */
-router.delete('/goods/:goodsId/cart', authMiddleware, async (req, res) => {
-  const { userId } = res.locals.user;
-  const { goodsId } = req.params;
-
-  const existsCart = await Cart.findOne({
-    userId,
-    goodsId,
-  }).exec();
-
-  // 있든 말든 신경 안쓴다. 그냥 있으면 지운다.
-  if (existsCart) {
-    await existsCart.delete().exec();
-  }
-
-  // NOTE: 성공했을때 딱히 정해진 응답 값이 없다.
-  res.send({});
-});
-
-/**
- * 모든 상품 가져오기
- * 상품도 몇개 없는 우리에겐 페이지네이션은 사치다.
- * @example
- * /api/goods
- * /api/goods?category=drink
- * /api/goods?category=drink2
- */
-router.get('/goods', authMiddleware, async (req, res) => {
-  const { category } = req.query;
-  const goods = await Goods.find(category ? { category } : undefined)
-    .sort('-date')
-    .exec();
-
-  res.send({ goods });
-});
-
-/**
- * 상품 하나만 가져오기
- */
-router.get('/goods/:goodsId', authMiddleware, async (req, res) => {
-  const { goodsId } = req.params;
-  const goods = await Goods.findById(goodsId).exec();
-
-  if (!goods) {
-    res.status(404).send({});
-  } else {
-    res.send({ goods });
-  }
+  const post = new Posts({ content, createdAt, nickname, postId, title, updatedAt, userId });
+  await post.save();
+  res.status(201).send({});
+  
 });
 
 app.use('/api', express.urlencoded({ extended: false }), router);

@@ -16,11 +16,16 @@ module.exports = (req, res, next) => {
   try {
     const { userId } = jwt.verify(tokenValue, 'my-secret-key');
     // jwt가 유효할 때만 데이터베이스에서 사용자 정보를 불러와서 res.locals에 담아준다.
-    User.findById(userId)
+    User.findOne({ userId })
       .exec()
       .then((user) => {
         // async가 없으므로 await은 안됨. promise then
-        res.locals.user = user; // express에서 맘대로 사용할 수 있는 공간을 제공함. 아무거나 담을 수 있다.
+        res.locals.user = {
+          createdAt: user.createdAt,
+          nickname: user.nickname,
+          password: user.password,
+          userId: user.userId,
+        }; // express에서 맘대로 사용할 수 있는 공간을 제공함. 아무거나 담을 수 있다.
         // 이 미들웨어를 사용하는 다른 곳에서도 공통적으로 다 사용할 수 있어서 편리하다.
         next(); // 미들웨어는 next를 호출하지 않으면 미들웨어 level에서 예외처리에 걸려 그 뒤에 미들웨어까지 연결이 안된다.
       });

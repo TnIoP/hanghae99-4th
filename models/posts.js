@@ -9,10 +9,4 @@ const PostsSchema = new mongoose.Schema({
   updatedAt: String,
   userId: Number,
 });
-PostsSchema.virtual('postsId').get(function () {
-  return this._id.toHexString();
-});
-PostsSchema.set('toJSON', {
-  virtuals: true,
-});
 module.exports = mongoose.model('Posts', PostsSchema);

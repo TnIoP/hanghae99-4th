@@ -52,8 +52,9 @@
             url: "/api/posts",
             data: {},
             success: function (response) {
-                for (const post of response.posts) {
-                    make_tr(post)
+                let posts = response;
+                for (let i = 0; i < posts.length; i++) {
+                    make_tr(posts[i]);
                 }
             },
             error: function (error) {
