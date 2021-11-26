@@ -32,10 +32,11 @@
 
 </style>
 <script>
-    console.log(location.pathname.split("/"));
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const postId = urlParams.get("postId");
 
     function modifyPost() {
-        const postId = location.pathname.split('/')[2]
         const title = $('#title').val()
         const content = $('#content').val()
 
@@ -47,7 +48,7 @@
             },
             data: {title, content},
             success: function (response) {
-                location.href = `/posts/${location.pathname.split("/")[2]}`
+                location.href = `/posts.html?postId=${postId}`
             },
             error: function (error) {
                 alert(error.responseJSON.errorMessage)

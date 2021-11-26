@@ -40,7 +40,7 @@ router.post('/users', async (req, res) => { // 회원가입
     const recentUserId = await User.find().sort("-userId").limit(1);
     let userId = 1;
     if (recentUserId.length !== 0) {
-        userId = recentList[0]["userId"] + 1; // 새로 작성된 Id의 key값+1 (중복제거를 위함)
+        userId = recentUserId[0]["userId"] + 1; // 새로 작성된 Id의 key값+1 (중복제거를 위함)
     }
 
     let createdAt = new Date();
@@ -105,6 +105,7 @@ router.post('/posts', authMiddleware, async (req, res) => { // 게시글 등록
   const { title, content } = req.body;
   const recentList = await Posts.find().sort("-postId").limit(1); // 마지막 등록된 게시글의 key값 가져오기
   let postId = 1;
+  
   if (recentList.length !== 0) {
       postId = recentList[0]["postId"] + 1; // 새로 작성된 게시글의 key값+1 (중복제거를 위함)
   }
@@ -116,6 +117,47 @@ router.post('/posts', authMiddleware, async (req, res) => { // 게시글 등록
   await post.save();
   res.status(201).send({});
   
+});
+
+router.get("/posts/:postId", async (req, res) => { // 게시물 상세페이지
+  try {
+      const { postId } = req.params;
+      let posts = await Posts.findOne({ postId });
+      res.json(posts);
+  } catch (err) {
+      console.error(err);
+  }
+});
+
+router.post('/comments/:postId', authMiddleware, async (req, res) => { // 댓글 등록
+  const { postId } = req.params;
+  const { nickname, userId } = res.locals.user;
+  const { comment } = req.body;
+  const recentComment = await Comments.find().sort("-commentId").limit(1); // 마지막 등록된 댓글의 key값 가져오기
+  let commentId = 1;
+  if (recentComment.length !== 0) {
+    commentId = recentComment[0]["commentId"] + 1; // 새로 작성된 댓글의 key값+1 (중복제거를 위함)
+  }
+
+  let createdAt = new Date();
+  let updatedAt = new Date();
+
+  const comments = new Comments({ comment, commentId, createdAt, nickname, updatedAt, userId, postId });
+  await comments.save();
+  res.status(201).send({});
+  
+});
+
+router.get("/comments/:postId", authMiddleware, async (req, res) => { // 해당 게시글의 모든 댓글 조회
+  try {
+      const { postId } = req.params;
+      let temp = {};
+      let comments = await Comments.find({});
+      
+      res.json(comments);
+  } catch (err) {
+      console.error(err);
+  }
 });
 
 app.use('/api', express.urlencoded({ extended: false }), router);

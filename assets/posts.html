@@ -35,22 +35,39 @@
 
 </style>
 <script>
-    let userId;
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const postId = urlParams.get("postId");
+
+    let userId = undefined;
     $(document).ready(function () {
         // 비회원, 회원 전부 볼 수 있어야하기 때문에 에러가 발생하지 않아야한다.
         if (localStorage.getItem("token")) {
             getSelf(function (user) {
                 userId = user.userId;
-                $(`#btnModify${userId}`).show()
+                $(`#btnModify`).show()
             })
         }
-        getComments()
+        getComments();
+        getPosts();
     });
 
-    // 해당 게시글의 모든 Comments를 조회
+    function getPosts() {
+        $.ajax({
+            type: "GET",
+            url: `/api/posts/${postId}`,
+            data: {},
+            success: function (response) {
+                let posts = response;
+                $('#title').val(posts["title"])
+                $('#content').val(posts["content"])
+            }
+        });
+    }
+
+    //해당 게시글의 모든 Comments를 조회
     function getComments() {
         //URL의 Depth가 바뀐다면 split Array 인자도 수정해야한다.
-        const postId = location.pathname.split("/")[2]
         const token = localStorage.getItem("token");
         $('#comment_body').empty();
 
@@ -62,11 +79,12 @@
             },
             data: { token },
             success: function (response) {
-                const comments = response['comments'];
-                const tokenUserId = response['userId']; //response['userId']가 존재하지 않을 경우 undefined를 설정
-
-                for (const commentObject of comments) {
-                    makeComment(commentObject, tokenUserId)
+                let comments = response;
+                const tokenUserId = userId; //response['userId']가 존재하지 않을 경우 undefined를 설정
+                for (let i = 0; i < comments.length; i++) {
+                    if(comments[i]['postId'] === Number(postId)){
+                        makeComment(comments[i], tokenUserId)
+                    }
                 }
             },
             error: function (error) {
@@ -144,6 +162,7 @@
     // 댓글을 UI에 그려주는 함수
     function makeComment(commentObject, tokenUserId) {
         const { commentId, nickname, comment, userId } = commentObject;
+        console.log("들어왔음s : "+tokenUserId + userId)
         // 접속한 userId와 댓글 userId가 같을 경우
         if (userId == tokenUserId) {
             const temp_html = `
@@ -180,7 +199,6 @@
     // 댓글 작성
     function writeComment() {
         const comment = $('#comment').val()
-        const postId = location.pathname.split("/")[2]
 
         if (!comment) {
             alert("댓글 내용을 입력 해주세요.")
@@ -206,13 +224,12 @@
     function loginCheck() {
         if (!localStorage.getItem("token")) {
             alert("로그인이 필요한 기능입니다.")
-            location.href = "/login"
+            location.href = "/login.html"
         }
     }
 
     function modifyPost() {
-        const postId = location.pathname.split("/")[2]
-        location.href = `/modify/${postId}`
+        location.href = `/modify.html?postId=${postId}`
     }
 
 </script>
@@ -225,16 +242,16 @@
         <div class="post-body">
 
             <div>
-                <button id="btnModify42" type="button" class="btn btn-primary" onclick="modifyPost()"
+                <button id="btnModify" type="button" class="btn btn-primary" onclick="modifyPost()"
                     style="display:none">수정
                 </button>
                 <button type="button" class="btn btn-secondary" onclick="location.href='/'">취소</button>
             </div>
 
             <label for="alert_title">Content</label>
-            <div class="alert alert-secondary" role="alert" id="alert_title">
-                1
-            </div>
+            
+            <input class="form-control" type="text" id="title" disabled>
+            
 
             <div class="form-group">
                 <label for="content">Content</label>
@@ -264,7 +281,6 @@
                     <input type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1"
                         id="comment" onclick="loginCheck()">
                     <button type="button" class="btn btn-primary" onclick="writeComment()">작성</button>
-
                 </div>
             </div>
         </div>
