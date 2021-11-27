@@ -45,11 +45,14 @@
         if (localStorage.getItem("token")) {
             getSelf(function (user) {
                 userId = user.userId;
-                $(`#btnModify`).show()
+                getPosts();
+                // $(`#btnModify${userId}`).show();
             })
+            getComments();
+        } else {
+            getPosts();
+            getComments_untoken()
         }
-        getComments();
-        getPosts();
     });
 
     function getPosts() {
@@ -61,6 +64,11 @@
                 let posts = response;
                 $('#title').val(posts["title"])
                 $('#content').val(posts["content"])
+                if (Number(posts["userId"]) === Number(userId)) {
+                    const temp_html = `<button id="btnModify${userId}" type="button" class="btn btn-primary" onclick="modifyPost()">수정</button>`
+                    $('#setModify').append(temp_html)
+                    $("#btnModify").attr('id', 'btnModify' + userId);
+                }
             }
         });
     }
@@ -81,9 +89,30 @@
             success: function (response) {
                 let comments = response;
                 const tokenUserId = userId; //response['userId']가 존재하지 않을 경우 undefined를 설정
-                for (let i = 0; i < comments.length; i++) {
-                    if(comments[i]['postId'] === Number(postId)){
+                for (let i = comments.length - 1; i >= 0; i--) {
+                    if (comments[i]['postId'] === Number(postId)) {
                         makeComment(comments[i], tokenUserId)
+                    }
+                }
+            },
+            error: function (error) {
+                console.error(error.responseJSON.errorMessage);
+            },
+        });
+    }
+
+    //해당 게시글의 모든 Comments를 조회
+    function getComments_untoken() {
+        $('#comment_body').empty();
+        $.ajax({
+            type: "GET",
+            url: `/api/comment/${postId}`,
+            data: {},
+            success: function (response) {
+                let comments = response;
+                for (let i = comments.length - 1; i >= 0; i--) {
+                    if (comments[i]['postId'] === Number(postId)) {
+                        makeComment(comments[i], 0)
                     }
                 }
             },
@@ -162,7 +191,6 @@
     // 댓글을 UI에 그려주는 함수
     function makeComment(commentObject, tokenUserId) {
         const { commentId, nickname, comment, userId } = commentObject;
-        console.log("들어왔음s : "+tokenUserId + userId)
         // 접속한 userId와 댓글 userId가 같을 경우
         if (userId == tokenUserId) {
             const temp_html = `
@@ -241,17 +269,15 @@
 
         <div class="post-body">
 
-            <div>
-                <button id="btnModify" type="button" class="btn btn-primary" onclick="modifyPost()"
-                    style="display:none">수정
-                </button>
+            <div id="setModify">
+
                 <button type="button" class="btn btn-secondary" onclick="location.href='/'">취소</button>
             </div>
 
             <label for="alert_title">Content</label>
-            
+
             <input class="form-control" type="text" id="title" disabled>
-            
+
 
             <div class="form-group">
                 <label for="content">Content</label>

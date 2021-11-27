@@ -18,7 +18,7 @@ function getSelf(callback) {
         localStorage.clear();
         alert('알 수 없는 문제가 발생했습니다. 관리자에게 문의 하세요.');
       }
-      window.location.href = '/';
+      window.location.href = '/login.html';
     },
   });
 }

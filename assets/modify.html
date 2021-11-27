@@ -36,13 +36,39 @@
     const urlParams = new URLSearchParams(queryString);
     const postId = urlParams.get("postId");
 
+    getSelf(function (u) {
+        user = u;
+      });
+    $(document).ready(function () {
+        setPosts();
+    });
+
+    function setPosts() {
+        $.ajax({
+            type: "GET",
+            url: `/api/modify/${postId}`,
+            headers: {
+                authorization: `Bearer ${localStorage.getItem("token")}`
+            },
+            data: {},
+            success: function (response) {
+                let posts = response;
+                $('#title').val(posts["title"]);
+                $('#content').val(posts["content"]);
+            },
+            error: function (error) {
+                alert(error.responseJSON.errorMessage)
+            },
+        });
+    }
+
     function modifyPost() {
         const title = $('#title').val()
         const content = $('#content').val()
 
         $.ajax({
             type: "PATCH",
-            url: `/api/posts/${postId}`,
+            url: `/api/modify/${postId}`,
             headers: {
                 authorization: `Bearer ${localStorage.getItem("token")}`
             },
