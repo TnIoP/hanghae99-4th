@@ -17,3 +17,10 @@ test('닉네임은 최소 3자 이상, 알파벳 대소문자(a~z, A~Z), 숫자(
     expect(signTest("asdf", "1234", "1234")).toEqual(true); // 비밀번호 === 비밀번호확인
     expect(signTest("asdf", "1234", "12345")).toEqual(false); // 비밀번호 !== 비밀번호확인
   });
+
+  // 임의의 닉네임 db = ["daniel", "coffee", "robot", "apple"]
+  test("데이터베이스에 존재하는 닉네임을 입력한 채 회원가입 버튼을 누른 경우 '중복된 닉네임입니다.' 라는 에러메세지가 발생합니다.", () => { 
+    expect(signTest("asdf", "1234", "1234")).toEqual(true); // 중복되지 않은 닉네임
+    expect(signTest("daniel", "1234", "1234")).toEqual(false); // 중복된 닉네임
+  });
+  
