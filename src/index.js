@@ -5,7 +5,7 @@ class Site {
 
     addBoard(board) {
         for (let i = 0; i < this.boards.length; i++) {
-            if (this.boards[i].name === board.name) throw new Error('Same BoardName.');
+            if (this.boards[i].name === board.name) throw new Error('Already Exist Same BoardName.');
         }
         board.registerCheck = true;
         this.boards.push(board);
