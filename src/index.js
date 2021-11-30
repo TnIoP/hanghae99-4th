@@ -31,15 +31,15 @@ class IotServer {
         this.sensor = [];
     }
 
-    start(sensorArr) {
-        this.sensor.push(sensorArr[0]); // 배열안에 json데이터가 와서 0번째를 push
+    start([sensor]) {
+        this.sensor.push(sensor); // 배열안에 json데이터가 와서 0번째를 push
     }
 
-    publish(jsonData) {
+    publish({ deviceId, actionId, payload }) { // 구조 분해 할당
         for (let i = 0; i < this.sensor.length; i++) {
-            if (this.sensor[i].id === jsonData.deviceId) {
-                if (this.sensor[i].powerStatus === 'on' && jsonData.actionId === 'CHANGE_REPORTING_INTERVAL') {
-                    this.sensor[i].reportingInterval = jsonData.payload;
+            if (this.sensor[i].id === deviceId) {
+                if (this.sensor[i].powerStatus === 'on' && actionId === 'CHANGE_REPORTING_INTERVAL') {
+                    this.sensor[i].reportingInterval = payload;
                 }
             }
         }
