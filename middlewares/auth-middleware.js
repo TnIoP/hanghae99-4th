@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/user'); // 실제로 데이터베이스에 조회해야 되니까 유저 사용자 모델이 필요
+const User = require('../schemas/users'); // 실제로 데이터베이스에 조회해야 되니까 유저 사용자 모델이 필요
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers; // http 인증 시 header에 담아서 보냄

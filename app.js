@@ -1,25 +1,24 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
-const User = require('./models/user');
-const Posts = require('./models/posts');
-const Comments = require('./models/comments');
-const Join = require('./models/join');
-const authMiddleware = require('./middlewares/auth-middleware');
+const express = require('express')
+const app = express()
+const port = 3000
+const jwt = require('jsonwebtoken')
+const authMiddleware = require('./middlewares/auth-middleware')
 
-mongoose.connect('mongodb://localhost/post', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
+const postsRouter = require('./routers/posts')
+const userRouter = require('./routers/user')
+const commentRouter = require('./routers/comment')
 
-const app = express();
-const router = express.Router();
+const connect = require('./schemas')
+connect()
 
-app.use('/api', express.urlencoded({ extended: false }), router);
-app.use(express.static('assets'));
+app.use(express.urlencoded({ extended: false }))
+app.use(express.static('public'))
+app.use(express.json())
 
-app.listen(8080, () => {
-  console.log('서버가 요청을 받을 준비가 됐어요');
-});
+app.use('/api', express.urlencoded({ extended: false }), postsRouter)
+app.use('/api', express.urlencoded({ extended: false }), userRouter)
+app.use('/api', express.urlencoded({ extended: false }), commentRouter)
+
+app.listen(port, () => {
+    console.log(`listening at http://localhost:${port}`)
+})
