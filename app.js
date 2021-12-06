@@ -17,15 +17,6 @@ db.on('error', console.error.bind(console, 'connection error:'));
 const app = express();
 const router = express.Router();
 
-
-
-
-
-
-
-
-
-
 app.use('/api', express.urlencoded({ extended: false }), router);
 app.use(express.static('assets'));
 
