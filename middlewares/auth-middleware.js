@@ -24,6 +24,7 @@ module.exports = (req, res, next) => {
         res.locals.user = {
           userId: user.userId,
           userName: user.userName,
+          userEmail: user.userEmail
           
         }; // express에서 맘대로 사용할 수 있는 공간을 제공함. 아무거나 담을 수 있다.
         // 이 미들웨어를 사용하는 다른 곳에서도 공통적으로 다 사용할 수 있어서 편리하다.
