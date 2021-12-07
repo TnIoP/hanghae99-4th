@@ -4,6 +4,7 @@ const router = express.Router();
 const User = require('../schemas/users');
 const Join = require('../schemas/join');
 const Post = require('../schemas/posts')
+const Comment = require('../schemas/comments')
 const authMiddleware = require('../middlewares/auth-middleware');
 
 // 회원가입 라우터
@@ -134,6 +135,15 @@ router.get('/mypage/post/:userId', authMiddleware, async(req, res)=>{
         mypost: mypost
     })
 })
+
+// 내가 쓴 글 삭제
+router.delete('/mypage/post/:userId/:postId', authMiddleware, async (req, res) => {
+    const { userId,postId } = req.params;
+    await Post.deleteOne({ userId, postId });
+    await Join.deleteMany({postId});
+    await Comment.deleteMany({postId})
+    res.send({ result: 'success' });
+});
 
 router.get('/mypage/join/:userId', authMiddleware, async(req, res)=>{
     const {userId} = req.params

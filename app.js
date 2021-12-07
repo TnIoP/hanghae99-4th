@@ -15,6 +15,8 @@ app.use(express.urlencoded({ extended: false }))
 app.use(express.static('public'))
 app.use(express.json())
 
+
+
 app.use('/api', express.urlencoded({ extended: false }), postsRouter)
 app.use('/api', express.urlencoded({ extended: false }), userRouter)
 app.use('/api', express.urlencoded({ extended: false }), commentRouter)
