@@ -46,8 +46,9 @@ router.patch('/comments/:commentId', authMiddleware, async (req, res) => {
 
 // 댓글 삭제
 router.delete('/comments/:commentId', authMiddleware, async (req, res) => {
+  const { userId } = res.locals.user;
   const { commentId } = req.params;
-  await Comments.deleteOne({ commentId });
+  await Comments.deleteOne({ userId, commentId });
   res.send({ result: 'success' });
 });
 
