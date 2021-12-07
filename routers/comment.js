@@ -38,9 +38,13 @@ router.get('/comments/:commentId', authMiddleware, async (req, res) => {
 });
 
 // 댓글 수정
-router.patch('/comments/:commentId', authMiddleware, async (req, res) => {
-    const { content, commentId } = req.body;
-    await Comments.updateOne({ commentId }, { $set: { content } });
+router.put('/comments/:commentId', authMiddleware, async (req, res) => {
+    const { userId } = res.locals.user;
+    const { commentId } = req.params;
+    const { content } = req.body;
+    const existsComment = await Comments.findOne({ userId, commentId });
+    const { postId } = existsComment.postId;
+    await Comments.updateOne({ commentId }, { $set: { postId, userId, commentId, content } });
     res.send({ result: 'success' });
 });
 
