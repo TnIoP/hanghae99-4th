@@ -7,6 +7,7 @@ const Posts = require('./models/posts');
 const Comments = require('./models/comments');
 const authMiddleware = require('./middlewares/auth-middleware');
 
+//mongoose.connect('mongodb://test:test@localhost:27017/admin', {
 mongoose.connect('mongodb://localhost/post', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -277,6 +278,7 @@ router.patch('/modify/:postId', authMiddleware, async (req, res) => {
 app.use('/api', express.urlencoded({ extended: false }), router);
 app.use(express.static('assets'));
 
+// app.listen(3000, () => {
 app.listen(8080, () => {
   console.log('서버가 요청을 받을 준비가 됐어요');
 });
