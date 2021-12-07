@@ -55,6 +55,7 @@ router.post('/login', async (req, res) => {
     console.log(user)
     if (user == null) {
         res.status(401).send({
+            result: "notExist",
             errorMessage: '아이디와 비밀번호를 확인하세요.',
         })
         return
@@ -62,6 +63,7 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({ userId: user.userId, userName: user.userName }, 'my-secret-key')
     console.log(token)
     res.send({
+        result:"success",
         token,
     })
 })

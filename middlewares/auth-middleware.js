@@ -8,6 +8,7 @@ module.exports = (req, res, next) => {
   if (tokenType !== 'Bearer') {
     // 참보다 거짓일 경우로 하는 것이 편하다.
     res.status(401).send({
+      result:"notTokenExist",
       errorMessage: '로그인 후 사용하세요.',
     });
     return;
