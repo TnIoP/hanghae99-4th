@@ -134,7 +134,12 @@ router.get('/mypage/post/:userId', authMiddleware, async(req, res)=>{
         mypost: mypost
     })
 })
-
+// 내가 쓴 글 삭제
+router.delete('/mypage/post/:userId/:postId', authMiddleware, async (req, res) => {
+    const { userId,postId } = req.params;
+    await Post.deleteOne({ userId, postId });
+    res.send({ result: 'success' });
+});
 router.get('/mypage/join/:userId', authMiddleware, async(req, res)=>{
     const {userId} = req.params
     const myjoin = await User.find({userId}).exec()
