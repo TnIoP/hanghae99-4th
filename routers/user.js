@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../schemas/users');
 const Join = require('../schemas/join');
+const Post = require('../schemas/posts')
 const authMiddleware = require('../middlewares/auth-middleware');
 
 // 회원가입 라우터
@@ -87,6 +88,42 @@ router.get('/mypage/:userId', authMiddleware, async (req, res)=>{
         userName: userName
     })
     
+})
+
+router.patch('/mypage/:userId', authMiddleware, async (req, res)=>{
+    const { userId } = req.params
+    const {userName} = req.body
+
+    const existName = await User.find({ userName })
+    if (existName.length){
+        res.status(401).send({
+            result:"nidknameExist",
+            errorMessage: "중복된 닉네임 입니다."
+        })
+        return
+    }
+
+    await User.updateOne({userId:userId}, {$set:{userName:userName}}).exec()
+    res.send({
+        result:"success"
+    })
+})
+
+router.get('/mypage/post/:userId', authMiddleware, async(req, res)=>{
+    const {userId} = req.params
+    const mypost = await Post.find({userId}).exec()
+
+    res.send({
+        mypost: mypost
+    })
+})
+
+router.get('/mypage/join/:userId', authMiddleware, async(req, res)=>{
+    const {userId} = req.params
+    const myjoin = await User.find({userId}).exec()
+    res.send({
+        myjoin : myjoin
+    })
 })
 
 module.exports = router;
