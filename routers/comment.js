@@ -31,21 +31,21 @@ router.post('/comments/:commentId', authMiddleware, async (req, res) => {
 });
 
 // 댓글 수정 시 해당 댓글 하나 가져오기
-router.get('/comments/:commentId', async (req, res) => {
+router.get('/comments/:commentId', authMiddleware, async (req, res) => {
   const { commentId } = req.params;
   comment = await Comments.findOne({ commentId });
   res.json({ detail: comment });
 });
 
 // 댓글 수정
-router.patch('/comments/:commentId', async (req, res) => {
+router.patch('/comments/:commentId', authMiddleware, async (req, res) => {
   const { content, commentId } = req.body;
   await Comments.updateOne({ commentId }, { $set: { content } });
   res.send({ result: 'success' });
 });
 
 // 댓글 삭제
-router.delete('/comments/:commentId', async (req, res) => {
+router.delete('/comments/:commentId', authMiddleware, async (req, res) => {
   const { commentId } = req.params;
   await Comments.deleteOne({ commentId });
   res.send({ result: 'success' });
