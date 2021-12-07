@@ -5,4 +5,6 @@ const JoinSchema = new mongoose.Schema({
   userId: Number,
   joinCheck: Boolean,
 });
+
+
 module.exports = mongoose.model('Join', JoinSchema);
