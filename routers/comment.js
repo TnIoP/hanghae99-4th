@@ -9,16 +9,16 @@ router.get('/comments/:postId', authMiddleware, async (req, res, next) => {
     try {
         const { postId } = req.params;
         let comments = await Comments.find({ postId }).sort('commentId').lean();
-        res.json({ comments: comments });
+        res.json({ comments });
     } catch (err) {
         console.error(err);
-        next(err);
     }
 });
 
 // 댓글 작성
-router.post('/comments/:commentId', authMiddleware, async (req, res) => {
-    const { postId, content } = req.body;
+router.post('/comments/:postId', authMiddleware, async (req, res) => {
+    const { postId } = req.params;
+    const { content } = req.body;
     const { userId, userName } = res.locals.user;
     const recentComment = await Comments.find().sort('-commentId').limit(1);
     let commentId = 1;
@@ -34,17 +34,17 @@ router.post('/comments/:commentId', authMiddleware, async (req, res) => {
 router.get('/comments/:commentId', authMiddleware, async (req, res) => {
     const { commentId } = req.params;
     comment = await Comments.findOne({ commentId });
-    res.json({ detail: comment });
+    res.json({ comment });
 });
 
 // 댓글 수정
 router.put('/comments/:commentId', authMiddleware, async (req, res) => {
-    const { userId } = res.locals.user;
+    const { userId, userName } = res.locals.user;
     const { commentId } = req.params;
     const { content } = req.body;
     const existsComment = await Comments.findOne({ userId, commentId });
     const { postId } = existsComment.postId;
-    await Comments.updateOne({ commentId }, { $set: { postId, userId, commentId, content } });
+    await Comments.updateOne({ commentId }, { $set: { postId, userId, userName, commentId, content } });
     res.send({ result: 'success' });
 });
 
