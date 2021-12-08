@@ -20,7 +20,6 @@ router.post('/write', authMiddleware, async (req, res) => {
         content, deadline_date, currentState, state
     });
     await Join.create({ postId, userId });
-    console.log(currentState)
     res.send({ result: "success" })
 });
 
@@ -29,7 +28,6 @@ router.get('/post', async (req, res) => {
     try {
         const posts = await Posts.find({}).sort("-postId");
         res.json({ posts: posts });
-        console.log(posts)
     } catch (err) {
 
     }
@@ -54,7 +52,7 @@ router.put("/modify/:postId", authMiddleware, async (req, res) => {
         const { title, subject, content, deadline_date, state } = req.body;
 
         const eixstId = await Posts.find({ postId });
-        console.log(eixstId)
+
         if (eixstId.length !== 0) {
             await Posts.updateOne({ postId }, { $set: { postId, title, subject, userId, userName, content, deadline_date, state } })
             res.send({ result: "success" })
@@ -74,11 +72,9 @@ router.delete("/post/:postId", authMiddleware, async (req, res) => {
         const { postId } = req.params
         const { userId } = res.locals.user
         const checkPasswd = await Posts.findOne({ postId, userId });
-        let asd = await Join.deleteOne({postId});
         if (checkPasswd.length !== 0) {
             await Comments.delete({ postId });
             await Join.delete({ postId });
-            console.log(asd)
             await Posts.deleteOne({ postId });
             
             res.send({ result: "삭제되었습니다." })
@@ -121,7 +117,6 @@ router.post("/join/:postId", authMiddleware, async (req, res) => {
         } else {
             await Join.deleteOne({ postId, userId });
             await Posts.updateOne({ postId }, { $set: { currentState: currentState - 1 } });
-            console.log(currentState, state)
             res.send({ result: "cancle" })
         }
 

@@ -9,25 +9,15 @@ const authMiddleware = require('../middlewares/auth-middleware');
 
 // 회원가입 
 router.post('/register', async (req, res) => {
-    console.log(req.body);
     const { userEmail, userName, password, passwordConfirm } = req.body;
-    console.log(userEmail);
-    console.log(userName);
-    console.log(password);
-    console.log(passwordConfirm);
-
     if (password !== passwordConfirm) {
-        console.log('패스워드 체크 막힘');
         res.status(400).send({
             result: 'passwordError',
             errorMessage: '패스워드가 패스워드 확인란과 일치하지 않습니다.',
         });
         return;
     }
-    console.log('existusers 전');
-
     const existEmail = await User.find({ userEmail });
-    console.log('existusers 후');
 
     if (existEmail.length) {
         res.status(400).send({
@@ -62,8 +52,6 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     const { userEmail, password } = req.body
     const user = await User.findOne({ userEmail, password })
-    console.log('/login post 들어옴 => user')
-    console.log(user)
     if (user == null) {
         res.status(401).send({
             result: "notExist",
@@ -72,7 +60,6 @@ router.post('/login', async (req, res) => {
         return
     }
     const token = jwt.sign({ userId: user.userId, userEmail: user.userEmail, userName: user.userName }, 'my-secret-key')
-    console.log(token)
     res.send({
         result: "success",
         token,
@@ -161,9 +148,7 @@ router.get('/mypage/join/:userId', authMiddleware, async (req, res) => {
     const existPost = []
     for (let i = 0; i < existJoin.length; i++) {
         temp = existJoin[i]['postId'];
-        console.log(temp)
         temp2 = await Post.findOne({ postId: temp });
-        console.log(temp2)
         existPost.push(temp2);
     }
     res.send(existPost);
