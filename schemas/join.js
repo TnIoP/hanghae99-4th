@@ -5,5 +5,4 @@ const JoinSchema = new mongoose.Schema({
   userId: Number,
 });
 
-
 module.exports = mongoose.model('Join', JoinSchema);

@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 
 const connect = () => {
-  mongoose.connect('mongodb://test:test@localhost:27017/admin', {
-  // mongoose.connect('mongodb://127.0.0.1:27017/together', {
+  mongoose
+    .connect('mongodb://test:test@localhost:27017/admin', {
+      // mongoose.connect('mongodb://127.0.0.1:27017/together', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       ignoreUndefined: true,
