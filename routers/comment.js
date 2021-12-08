@@ -31,7 +31,7 @@ router.post('/comments/:postId', authMiddleware, async (req, res) => {
 });
 
 // 댓글 수정 시 해당 댓글 하나 가져오기
-router.get('/comments/:commentId', authMiddleware, async (req, res) => {
+router.get('/comments/modify/:commentId', authMiddleware, async (req, res) => {
     const { commentId } = req.params;
     comment = await Comments.findOne({ commentId });
     res.json({ comment });
