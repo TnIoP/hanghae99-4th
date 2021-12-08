@@ -7,7 +7,7 @@ const Post = require('../schemas/posts')
 const Comment = require('../schemas/comments')
 const authMiddleware = require('../middlewares/auth-middleware');
 
-// 회원가입 라우터
+// 회원가입 
 router.post('/register', async (req, res) => {
     console.log(req.body);
     const { userEmail, userName, password, passwordConfirm } = req.body;
@@ -58,7 +58,7 @@ router.post('/register', async (req, res) => {
 });
 
 
-//로그인 라우터
+//로그인 
 router.post('/login', async (req, res) => {
     const { userEmail, password } = req.body
     const user = await User.findOne({ userEmail, password })
@@ -79,16 +79,7 @@ router.post('/login', async (req, res) => {
     })
 })
 
-//내 정보 조회 API
-// router.get('/users/me', authMiddleware, async (req, res) => {
-//     const { user } = res.locals
-//     res.send({
-//         user: {
-//             userId: user.id,
-//             userName: user.userName
-//         },
-//     })
-// })
+
 
 //마이페이지 조회 API
 router.get('/mypage/:userId', authMiddleware, async (req, res) => {
@@ -104,7 +95,8 @@ router.get('/mypage/:userId', authMiddleware, async (req, res) => {
 
 })
 
-router.put('/mypage/:userId', authMiddleware, async (req, res) => {
+// 내정보 수정 API
+router.patch('/mypage/:userId', authMiddleware, async (req, res) => {
     const { userId } = req.params
     const user = await User.findOne({ userId })
     const { userName, password, passwordConfirm } = req.body
@@ -125,12 +117,14 @@ router.put('/mypage/:userId', authMiddleware, async (req, res) => {
         return
     }
 
-    await User.updateOne({ userId: userId }, { $set: { userId: userId, userEmail: userEmail, userName: userName, password: password } }).exec()
+    await User.updateOne({ userId: userId }, { $set: { userName: userName, password: password } }).exec()
+    await Post.updateMany({ userId: userId }, { $set: { userName: userName } })
+    await Join.updateMany({ userId: userId }, { $set: { userName: userName } })
     res.send({
         result: "success"
     })
 })
-//내가 작성한 글
+// 내가 작성한 모임 API
 router.get('/mypage/posts/:userId', authMiddleware, async (req, res) => {
     const { userId } = req.params
     const mypost = await Post.find({ userId }).exec()
@@ -153,17 +147,17 @@ router.delete('/mypage/posts/:userId/:postId', authMiddleware, async (req, res) 
 //참가한 스터디 목록
 router.get('/mypage/join/:userId', authMiddleware, async (req, res) => {
     const { userId } = req.params
-    let temp 
-    let temp2 
-    const existJoin = await Join.find({ userId, joinCheck: true }) 
-    const existPost = [] 
-    for (let i = 0; i < existJoin.length; i++) { 
+    let temp
+    let temp2
+    const existJoin = await Join.find({ userId, joinCheck: true })
+    const existPost = []
+    for (let i = 0; i < existJoin.length; i++) {
         temp = existJoin[i]['postId'];
-        console.log(temp) 
-        temp2 = await Post.findOne({ postId:temp });
+        console.log(temp)
+        temp2 = await Post.findOne({ postId: temp });
         console.log(temp2)
         existPost.push(temp2);
-    } 
+    }
     res.send(existPost);
 
 })
