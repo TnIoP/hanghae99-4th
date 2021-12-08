@@ -93,7 +93,7 @@ router.delete("/post/:postId", authMiddleware, async (req, res) => {
 })
 
 // 게시글 조회
-router.post("/post/:postId", async (req, res) => {
+router.get("/post/:postId", async (req, res) => {
 
     const { postId } = req.params;
     const post = await Posts.findOne({ postId });
