@@ -7,7 +7,7 @@ const Post = require('../schemas/posts')
 const Comment = require('../schemas/comments')
 const authMiddleware = require('../middlewares/auth-middleware');
 
-// 회원가입 라우터
+// 회원가입 
 router.post('/register', async (req, res) => {
     console.log(req.body);
     const { userEmail, userName, password, passwordConfirm } = req.body;
@@ -19,6 +19,7 @@ router.post('/register', async (req, res) => {
     if (password !== passwordConfirm) {
         console.log('패스워드 체크 막힘');
         res.status(400).send({
+            result: 'passwordError',
             errorMessage: '패스워드가 패스워드 확인란과 일치하지 않습니다.',
         });
         return;
@@ -30,7 +31,7 @@ router.post('/register', async (req, res) => {
 
     if (existEmail.length) {
         res.status(400).send({
-            existEmail,
+            result: "existError",
             errorMessage: '이미 가입된 아이디가 있습니다.',
         });
         return;
@@ -38,6 +39,7 @@ router.post('/register', async (req, res) => {
     const existName = await User.find({ userName });
     if (existName.length) {
         res.status(400).send({
+            result: "usernameExist",
             errorMessage: '중복된 닉네임이 있습니다.',
         });
         return;
@@ -50,11 +52,13 @@ router.post('/register', async (req, res) => {
     }
     const user = new User({ userId, userEmail, userName, password });
     await user.save();
-    res.status(201).send({});
+    res.status(201).send({
+        result: "success"
+    });
 });
 
 
-//로그인 라우터
+//로그인 
 router.post('/login', async (req, res) => {
     const { userEmail, password } = req.body
     const user = await User.findOne({ userEmail, password })
@@ -67,27 +71,18 @@ router.post('/login', async (req, res) => {
         })
         return
     }
-    const token = jwt.sign({ userId: user.userId, userEmail:user.userEmail, userName: user.userName }, 'my-secret-key')
+    const token = jwt.sign({ userId: user.userId, userEmail: user.userEmail, userName: user.userName }, 'my-secret-key')
     console.log(token)
     res.send({
-        result:"success",
+        result: "success",
         token,
     })
 })
 
-//내 정보 조회 API
-// router.get('/users/me', authMiddleware, async (req, res) => {
-//     const { user } = res.locals
-//     res.send({
-//         user: {
-//             userId: user.id,
-//             userName: user.userName
-//         },
-//     })
-// })
+
 
 //마이페이지 조회 API
-router.get('/mypage/:userId', authMiddleware, async (req, res)=>{
+router.get('/mypage/:userId', authMiddleware, async (req, res) => {
     const { userId } = req.params
     const user = await User.findOne({ userId })
     const userEmail = user.userEmail
@@ -97,13 +92,14 @@ router.get('/mypage/:userId', authMiddleware, async (req, res)=>{
         userEmail: userEmail,
         userName: userName
     })
-    
+
 })
 
-router.put('/mypage/:userId', authMiddleware, async (req, res)=>{
+// 내정보 수정 API
+router.patch('/mypage/:userId', authMiddleware, async (req, res) => {
     const { userId } = req.params
-    const user = await User.findOne({userId})
-    const {userName, password, passwordConfirm} = req.body
+    const user = await User.findOne({ userId })
+    const { userName, password, passwordConfirm } = req.body
     const userEmail = user.userEmail
     if (password !== passwordConfirm) {
         res.status(400).send({
@@ -112,24 +108,26 @@ router.put('/mypage/:userId', authMiddleware, async (req, res)=>{
         return;
     }
     const existName = await User.find({ userName })
-    
-    if (existName.length){
+
+    if (existName.length) {
         res.status(400).send({
-            result:"nidknameExist",
+            result: "nidknameExist",
             errorMessage: "중복된 닉네임 입니다."
         })
         return
     }
 
-    await User.updateOne({userId:userId}, {$set:{userId:userId,userEmail:userEmail,userName:userName,password:password}}).exec()
+    await User.updateOne({ userId: userId }, { $set: { userName: userName, password: password } }).exec()
+    await Post.updateMany({ userId: userId }, { $set: { userName: userName } })
+    await Comment.updateMany({ userId: userId },{ $set: {userName: userName }})
     res.send({
-        result:"success"
+        result: "success"
     })
 })
-
-router.get('/mypage/post/:userId', authMiddleware, async(req, res)=>{
-    const {userId} = req.params
-    const mypost = await Post.find({userId}).exec()
+// 내가 작성한 모임 API
+router.get('/mypage/posts/:userId', authMiddleware, async (req, res) => {
+    const { userId } = req.params
+    const mypost = await Post.find({ userId }).exec()
 
     res.send({
         mypost: mypost
@@ -137,20 +135,31 @@ router.get('/mypage/post/:userId', authMiddleware, async(req, res)=>{
 })
 
 // 내가 쓴 글 삭제
-router.delete('/mypage/post/:userId/:postId', authMiddleware, async (req, res) => {
-    const { userId,postId } = req.params;
+router.delete('/mypage/posts/:userId/:postId', authMiddleware, async (req, res) => {
+    const { userId, postId } = req.params;
+
     await Post.deleteOne({ userId, postId });
-    await Join.deleteMany({postId});
-    await Comment.deleteMany({postId})
+    await Join.deleteMany({ postId });
+    await Comment.deleteMany({ postId })
     res.send({ result: 'success' });
 });
 
-router.get('/mypage/join/:userId', authMiddleware, async(req, res)=>{
-    const {userId} = req.params
-    const myjoin = await User.find({userId}).exec()
-    res.send({
-        myjoin : myjoin
-    })
+//참가한 스터디 목록
+router.get('/mypage/join/:userId', authMiddleware, async (req, res) => {
+    const { userId } = req.params
+    let temp
+    let temp2
+    const existJoin = await Join.find({ userId })
+    const existPost = []
+    for (let i = 0; i < existJoin.length; i++) {
+        temp = existJoin[i]['postId'];
+        console.log(temp)
+        temp2 = await Post.findOne({ postId: temp });
+        console.log(temp2)
+        existPost.push(temp2);
+    }
+    res.send(existPost);
+
 })
 
 module.exports = router;
