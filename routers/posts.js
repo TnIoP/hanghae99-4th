@@ -11,8 +11,8 @@ router.post('/write', authMiddleware, async (req, res) => {
     const { title, subject, content, deadline_date, state } = req.body;
     const currentState = 1;
     let postId = await Posts.find({}).sort("-postId").limit(1);
-    if (postId.length == 0) { postId = 1 } // 검색결과가 없으면 boardId를 1로 설정
-    else { postId = postId[0]['postId'] + 1; } //검색결과가 있으면 결과의 boardId + 1 로 설정
+    if (postId.length == 0) { postId = 1 } // 검색결과가 없으면 postId를 1로 설정
+    else { postId = postId[0]['postId'] + 1; } //검색결과가 있으면 결과의 postId + 1 로 설정
 
     await Posts.create({
         postId, title, subject, userId, userName,
@@ -73,7 +73,10 @@ router.delete("/post/:postId", authMiddleware, async (req, res) => {
         const { postId } = req.params
         const { userId } = res.locals.user
         const checkPasswd = await Posts.findOne({ postId, userId });
+        let asd = await Join.deleteOne({postId});
         if (checkPasswd.length !== 0) {
+            await Join.deleteOne({postId});
+            console.log(asd)
             await Posts.deleteOne({ postId })
             res.send({ result: "삭제되었습니다." })
         }
