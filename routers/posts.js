@@ -1,5 +1,6 @@
 const express = require('express')
 const Posts = require('../schemas/posts')
+const Comments = require('../schemas/comments');
 const authMiddleware = require('../middlewares/auth-middleware')
 const Join = require('../schemas/join')
 const router = express.Router()
@@ -75,9 +76,11 @@ router.delete("/post/:postId", authMiddleware, async (req, res) => {
         const checkPasswd = await Posts.findOne({ postId, userId });
         let asd = await Join.deleteOne({postId});
         if (checkPasswd.length !== 0) {
-            await Join.deleteOne({postId});
+            await Comments.delete({ postId });
+            await Join.delete({ postId });
             console.log(asd)
-            await Posts.deleteOne({ postId })
+            await Posts.deleteOne({ postId });
+            
             res.send({ result: "삭제되었습니다." })
         }
         else {

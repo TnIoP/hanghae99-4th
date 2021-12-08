@@ -1,8 +1,15 @@
 const express = require('express')
+const cors = require("cors");
 const app = express()
 const port = 3000
 const jwt = require('jsonwebtoken')
 const authMiddleware = require('./middlewares/auth-middleware')
+
+const corsOptions = {
+    origin: "*", // 나중에 여기에 url
+    credentials: true
+  }
+  app.use(cors(corsOptions));
 
 const postsRouter = require('./routers/posts')
 const userRouter = require('./routers/user')
