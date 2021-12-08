@@ -11,7 +11,7 @@ router.post('/write', authMiddleware, async (req, res) => {
     const { userId, userName } = res.locals.user;
     const { title, subject, content, deadline_date, state } = req.body;
     const currentState = 1;
-    const postId = await Posts.find({}).sort("-postId").limit(1);
+    let postId = await Posts.find({}).sort("-postId").limit(1);
     if (postId.length == 0) { postId = 1 } // 검색결과가 없으면 boardId를 1로 설정
     else { postId = postId[0]['postId'] + 1; } //검색결과가 있으면 결과의 boardId + 1 로 설정
 
@@ -19,7 +19,8 @@ router.post('/write', authMiddleware, async (req, res) => {
         postId, title, subject, userId, userName,
         content, deadline_date, currentState, state
     });
-
+    await Join.create({ postId, userId });
+    console.log(currentState)
     res.send({ result: "success" })
 });
 
@@ -28,6 +29,7 @@ router.get('/post', async (req, res) => {
     try {
         const posts = await Posts.find({}).sort("-postId");
         res.json({ posts: posts });
+        console.log(posts)
     } catch (err) {
 
     }
@@ -35,16 +37,16 @@ router.get('/post', async (req, res) => {
 });
 
 // 게시글 수정페이지 로딩
-router.get("/modify:postId", authMiddleware, async (req, res) => {
+router.get("/modify/:postId", authMiddleware, async (req, res) => {
     const { postId } = req.params;
-    post = await Posts.findOne({ postId: postId });
+    const post = await Posts.findOne({ postId: postId });
 
     res.json({ post })
 });
 
 
 // 게시글 수정하기
-router.put("/modify:postId", authMiddleware, async (req, res) => {
+router.put("/modify/:postId", authMiddleware, async (req, res) => {
 
     try {
         const { postId } = req.params;
@@ -52,6 +54,7 @@ router.put("/modify:postId", authMiddleware, async (req, res) => {
         const { title, subject, content, deadline_date, state } = req.body;
 
         const eixstId = await Posts.find({ postId });
+        console.log(eixstId)
         if (eixstId.length !== 0) {
             await Posts.updateOne({ postId }, { $set: { postId, title, subject, userId, userName, content, deadline_date, state } })
             res.send({ result: "success" })
@@ -65,7 +68,7 @@ router.put("/modify:postId", authMiddleware, async (req, res) => {
 })
 
 // 게시글 삭제하기
-router.delete("/post:postId", authMiddleware, async (req, res) => {
+router.delete("/post/:postId", authMiddleware, async (req, res) => {
 
     try {
         const { postId } = req.params
@@ -85,7 +88,7 @@ router.delete("/post:postId", authMiddleware, async (req, res) => {
 })
 
 // 게시글 조회
-router.post("/post:postId", async (req, res) => {
+router.post("/post/:postId", async (req, res) => {
 
     const { postId } = req.params;
     const post = await Posts.findOne({ postId });
@@ -94,16 +97,32 @@ router.post("/post:postId", async (req, res) => {
 })
 
 // 참가 신청/취소
-router.post("/join:postId", authMiddleware, async (req, res) => {
+router.post("/join/:postId", authMiddleware, async (req, res) => {
     try {
         const { postId } = req.params;
-        const { userId } = res.locals.user;
-        const joinCheck = await Join.findOne({ postId, userId });
-        const { state } = await Posts.findById(postId)
 
-        if (!joinCheck) {
-            await Join.create({ postId, userId, joinCheck: parseInt(joinCheck.state) });
-            await Posts.findByIdAndUpdate(postId, { $set: { joinCount: joinCount + 1 } });
+        const { userId } = res.locals.user;
+
+        const joinExist = await Join.findOne({ postId, userId });
+        //console.log(joinExist)
+
+        let { currentState, state } = await Posts.findOne({ postId })
+        //console.log(currentState, state)
+
+        if (!joinExist) {
+            if (currentState >= state) {
+                res.send({ result: "doesntwork" })
+            } else if (currentState + 1 >= state) {
+                await Join.create({ postId, userId });
+                await Posts.updateOne({ postId }, { $set: { currentState: currentState + 1 } });
+                res.send({ result: "full" })
+            }
+
+        } else {
+            await Join.deleteOne({ postId, userId });
+            await Posts.updateOne({ postId }, { $set: { currentState: currentState - 1 } });
+            console.log(currentState, state)
+            res.send({ result: "del" })
         }
 
     } catch (err) {
@@ -114,8 +133,11 @@ router.post("/join:postId", authMiddleware, async (req, res) => {
 })
 
 // 참가 신청 내역 조회
-router.get("/join:postId", authMiddleware, async (req, res) => {
+router.get("/join/:postId", authMiddleware, async (req, res) => {
+    const { postId } = req.params;
+    const join = await Join.findOne({ postId: postId });
 
+    res.json(join)
 })
 
 
