@@ -119,7 +119,7 @@ router.patch('/mypage/:userId', authMiddleware, async (req, res) => {
 
     await User.updateOne({ userId: userId }, { $set: { userName: userName, password: password } }).exec()
     await Post.updateMany({ userId: userId }, { $set: { userName: userName } })
-    await Join.updateMany({ userId: userId }, { $set: { userName: userName } })
+    await Comment.updateMany({ userId: userId },{ $set: {userName: userName }})
     res.send({
         result: "success"
     })
