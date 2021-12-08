@@ -19,14 +19,14 @@ router.get('/comments/:postId', authMiddleware, async (req, res, next) => {
 // 댓글 작성
 router.post('/comments/:commentId', authMiddleware, async (req, res) => {
     const { postId, content } = req.body;
-    const { userId } = res.locals.user;
+    const { userId, userName } = res.locals.user;
     const recentComment = await Comments.find().sort('-commentId').limit(1);
     let commentId = 1;
     if (recentComment.length != 0) {
         commentId = recentComment[0]['commentId'] + 1;
     }
 
-    await Comments.create({ postId, userId, commentId, content });
+    await Comments.create({ postId, userId, userName, commentId, content });
     res.send({ result: 'success' });
 });
 
