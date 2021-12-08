@@ -67,26 +67,31 @@ router.put("/modify/:postId", authMiddleware, async (req, res) => {
 
 // 게시글 삭제하기
 router.delete("/post/:postId", authMiddleware, async (req, res) => {
-
     try {
         const { postId } = req.params
         const { userId } = res.locals.user
-        const checkPasswd = await Posts.findOne({ postId, userId });
-        if (checkPasswd.length !== 0) {
-            await Comments.delete({ postId });
-            await Join.delete({ postId });
+        const postsExist = await Posts.findOne({ postId, userId });
+        const commentsExist = await Comments.findOne({ postId })
+
+        if (postsExist && commentsExist) {
+            await Comments.deleteMany({ postId });
+            await Join.deleteMany({ postId });
             await Posts.deleteOne({ postId });
-            
-            res.send({ result: "삭제되었습니다." })
+            res.send({ result: "success" })
+        } 
+        else if (postsExist) {
+            await Join.deleteMany({ postId });
+            await Posts.deleteOne({ postId });
+            res.send({ result: "success" })
         }
         else {
-            res.send({ result: "비밀번호가 틀립니다" })
+            res.send({ result: "fail" })
         }
-
     } catch (err) {
 
     }
 })
+
 
 // 게시글 조회
 router.get("/post/:postId", async (req, res) => {
