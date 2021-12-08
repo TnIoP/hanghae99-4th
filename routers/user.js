@@ -165,4 +165,13 @@ router.get('/mypage/join/:userId', authMiddleware, async (req, res) => {
   res.send(existPost);
 });
 
+router.get('/users/me', authMiddleware, async (req, res) => {
+    // 이 미들웨어를 사용하면 res.locals에 접근하면 항상 사용자정보가 들어있는 상태로 api를 구현하면 된다. 엄청쉬워짐
+    const { user } = res.locals;
+    res.send({
+      // 기본 status 코드는 200
+      user, // 현재 패스워드값이 포함되어있는데 원래는 이렇게 하면 안된다. 패스워드는 암호화 되어있어도 로그를 남기면 안됨
+    });
+  });
+
 module.exports = router;
