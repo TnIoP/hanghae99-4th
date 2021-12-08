@@ -1,6 +1,5 @@
 const express = require('express')
 const Posts = require('../schemas/posts')
-const jwt = require('jsonwebtoken')
 const authMiddleware = require('../middlewares/auth-middleware')
 const Join = require('../schemas/join')
 const router = express.Router()
@@ -100,14 +99,9 @@ router.post("/post/:postId", async (req, res) => {
 router.post("/join/:postId", authMiddleware, async (req, res) => {
     try {
         const { postId } = req.params;
-
         const { userId } = res.locals.user;
-
         const joinExist = await Join.findOne({ postId, userId });
-        //console.log(joinExist)
-
         let { currentState, state } = await Posts.findOne({ postId })
-        //console.log(currentState, state)
 
         if (!joinExist) {
             if (currentState >= state) {
@@ -122,7 +116,7 @@ router.post("/join/:postId", authMiddleware, async (req, res) => {
             await Join.deleteOne({ postId, userId });
             await Posts.updateOne({ postId }, { $set: { currentState: currentState - 1 } });
             console.log(currentState, state)
-            res.send({ result: "del" })
+            res.send({ result: "cancle" })
         }
 
     } catch (err) {
