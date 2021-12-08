@@ -5,7 +5,7 @@ const Comments = require('../schemas/comments');
 const authMiddleware = require('../middlewares/auth-middleware');
 
 // 댓글 목록 조회
-router.get('/comments/:postId', authMiddleware, async (req, res, next) => {
+router.get('/comments/:postId', authMiddleware, async (req, res) => {
     try {
         const { postId } = req.params;
         let comments = await Comments.find({ postId }).sort('commentId').lean();
