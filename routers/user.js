@@ -79,8 +79,6 @@ router.post('/login', async (req, res) => {
     })
 })
 
-
-
 //마이페이지 조회 API
 router.get('/mypage/:userId', authMiddleware, async (req, res) => {
     const { userId } = req.params
@@ -93,6 +91,17 @@ router.get('/mypage/:userId', authMiddleware, async (req, res) => {
         userName: userName
     })
 
+})
+// 내정보 수정 get
+router.get('/mypage/modify/:userId', authMiddleware, async (req, res) => {
+    const { userId } = req.params
+    const user = await User.findOne({ userId })
+    const userEmail = user.userEmail
+    const userName = user.userName
+    res.send({
+        userEmail: userEmail,
+        userName: userName
+    })
 })
 
 // 내정보 수정 API
@@ -116,7 +125,6 @@ router.patch('/mypage/:userId', authMiddleware, async (req, res) => {
         })
         return
     }
-
     await User.updateOne({ userId: userId }, { $set: { userName: userName, password: password } }).exec()
     await Post.updateMany({ userId: userId }, { $set: { userName: userName } })
     await Comment.updateMany({ userId: userId },{ $set: {userName: userName }})
