@@ -149,7 +149,7 @@ router.get('/mypage/join/:userId', authMiddleware, async (req, res) => {
     const { userId } = req.params
     let temp
     let temp2
-    const existJoin = await Join.find({ userId, joinCheck: true })
+    const existJoin = await Join.find({ userId })
     const existPost = []
     for (let i = 0; i < existJoin.length; i++) {
         temp = existJoin[i]['postId'];
