@@ -16,8 +16,12 @@
 ## 2. 사용 기술
 
 - `Backend`
-   - Node.js
-   - Express
+   - 개발언어 : Node.js
+   - 웹프레임워크 : Express
+   - 암호화 : jsonwebtoken
+   - API 문서화 : swagger
+   - MongoDB 데이터 모델링 : Mongoose
+   - Request Resource 제한 : Cors
 - `DB`
    - MongoDB
 
