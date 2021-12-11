@@ -98,6 +98,7 @@ router.patch('/mypage/:userId', authMiddleware, async (req, res) => {
   const user = await User.findOne({ userId });
   const { userName, password, passwordConfirm } = req.body;
   const userEmail = user.userEmail;
+  const myNickName = user.userName
   if (password !== passwordConfirm) {
     res.status(400).send({
       errorMessage: '패스워드가 패스워드 확인란과 일치하지 않습니다.',
@@ -105,7 +106,20 @@ router.patch('/mypage/:userId', authMiddleware, async (req, res) => {
     return;
   }
   const existName = await User.find({ userName });
-
+  if (myNickName == userName){
+    await User.updateOne(
+        { userId: userId },
+        { $set: { userName: userName, password: password } }
+      ).exec();
+      await Post.updateMany({ userId: userId }, { $set: { userName: userName } });
+      await Comment.updateMany(
+        { userId: userId },
+        { $set: { userName: userName } }
+      );
+      res.send({
+        result: 'success',
+      });
+  }
   if (existName.length) {
     res.status(401).send({
       result: 'nicknameExist',
