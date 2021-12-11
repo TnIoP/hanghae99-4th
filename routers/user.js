@@ -116,8 +116,15 @@ router.patch('/mypage/:userId', authMiddleware, async (req, res) => {
         { userId: userId },
         { $set: { userName: userName } }
       );
+      const userFix = await User.findOne({ userId });
+      const token = jwt.sign(
+        { userId: userFix.userId, userEmail: userFix.userEmail, userName: userFix.userName },
+        'my-secret-key'
+      );
+    
       res.send({
         result: 'success',
+        token,
       });
   }
   if (existName.length) {
@@ -136,8 +143,16 @@ router.patch('/mypage/:userId', authMiddleware, async (req, res) => {
     { userId: userId },
     { $set: { userName: userName } }
   );
+
+  const userFix = await User.findOne({ userId });
+  const token = jwt.sign(
+    { userId: userFix.userId, userEmail: userFix.userEmail, userName: userFix.userName },
+    'my-secret-key'
+  );
+
   res.send({
     result: 'success',
+    token,
   });
 });
 // 내가 작성한 모임 API
