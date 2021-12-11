@@ -107,8 +107,8 @@ router.patch('/mypage/:userId', authMiddleware, async (req, res) => {
   const existName = await User.find({ userName });
 
   if (existName.length) {
-    res.status(400).send({
-      result: 'nidknameExist',
+    res.status(401).send({
+      result: 'nicknameExist',
       errorMessage: '중복된 닉네임 입니다.',
     });
     return;

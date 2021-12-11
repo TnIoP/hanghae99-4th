@@ -120,26 +120,33 @@ router.post('/join/:postId', authMiddleware, async (req, res) => {
     const { userId } = res.locals.user;
     const joinExist = await Join.findOne({ postId, userId });
     let { currentState, state } = await Posts.findOne({ postId });
+    let temp;
+    console.log("요청들어옴 : "+currentState)
 
     if (!joinExist) {
+      console.log("join생성전")
       if (currentState >= state) {
         res.send({ result: 'full' });
       } else {
+        console.log("join생성하는 곳으로 들어옴")
         await Join.create({ postId, userId });
         await Posts.updateOne(
           { postId },
           { $set: { currentState: currentState + 1 } }
         );
+        temp = await Posts.findOne({ postId });
+        console.log("join생성후 : "+temp)
         res.send({ result: 'success' });
       }
     } else {
-      console.log('요청 : 4');
+      console.log('join 취소');
       await Join.deleteOne({ postId, userId });
       await Posts.updateOne(
         { postId },
         { $set: { currentState: currentState - 1 } }
       );
-      res.send({ result: 'cancle' });
+      console.log('join 삭제 완료');
+      res.send({ result: 'cancel' });
     }
   } catch (err) {
     res.status(401).send({
@@ -151,9 +158,15 @@ router.post('/join/:postId', authMiddleware, async (req, res) => {
 // 참가 신청 내역 조회
 router.get('/join/:postId', authMiddleware, async (req, res) => {
   const { postId } = req.params;
-  const join = await Join.findOne({ postId: postId });
+  const { userId } = res.locals.user;
+  const joinExist = await Join.findOne({ postId, userId });
+  console.log("요청 : "+joinExist);
 
-  res.json(join);
+  if (!joinExist) {
+    res.json({status : false});
+  } else {
+    res.json({status : true});
+  }
 });
 
 module.exports = router;
