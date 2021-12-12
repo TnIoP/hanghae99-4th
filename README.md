@@ -34,6 +34,7 @@
   - http://13.124.187.20/swagger/
 
 ## 4. 투게더 사이트 시연 영상
+https://www.youtube.com/watch?v=UyiIcpVmVmE
 --------------
 
 
