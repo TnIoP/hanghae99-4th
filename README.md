@@ -95,5 +95,5 @@
 
 ## 🍻 개인 회고
 #### 이도연 https://velog.io/@doyeon11/%ED%81%B4%EB%A1%A0%EC%BD%94%EB%94%A9-%ED%9A%8C%EA%B3%A0
-#### 이동호 https://velog.io/@point/%ED%95%AD%ED%95%B499-4%EA%B8%B0-Day-49-WIL
+#### 이동호 https://velog.io/@point/%ED%95%AD%ED%95%B499-4%EA%B8%B0-Day-48-WIL
 #### 정하나 https://hana-j.tistory.com/61
