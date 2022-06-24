@@ -1,0 +1,273 @@
+/* common */
+body {
+    width: 100%;
+    margin: auto;
+}
+
+body::before {
+    content: '';
+    background-image: url("../image/bgimg2.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    opacity: .5;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.wrap {
+    width: 1000px;
+    margin: auto;
+}
+
+a {
+    text-decoration: none;
+    color: #000;
+    display: block;
+}
+
+input, button, textarea {
+    display: block;
+}
+
+p {
+    display: inline;
+}
+
+.center {
+    width: 1000px;
+    height: 70px;
+    display: flex;
+    margin: auto;
+    position: relative;
+}
+
+.swal-overlay {
+    background-color: rgba(43, 165, 137, 0.45);
+}
+
+.swal-modal {
+  background-color: rgba(63,255,106,0.8);
+  border: 3px solid white;
+}
+
+.swal-title {
+  font-size: 22px;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.21);
+  margin: 0 0 28px 0;
+}
+
+
+/* nav-bar */
+.nav-bar {
+    width: 100%;
+    height: 140px;
+    position: fixed;
+    z-index: 5;
+    top: 0;
+    left: 0;
+    background: linear-gradient(to right, white 0%, #eee 50%, white 100%);
+}
+
+.nav-bar .center .logo_img1 img {
+    height: 140px;
+    position: absolute;
+    left: 0;
+    right: 400px;
+    opacity: .7;
+    margin:auto;
+}
+
+.nav-bar .center .logo_img2 img {
+    height: 140px;
+    position: absolute;
+    left: 420px;
+    right: 0;
+    opacity: .4;
+    margin:auto;
+    transform: scale(1.5);
+}
+
+.nav-bar .center .mainPage > img {
+    width: 100px;
+    height: 100%;
+}
+
+.nav-bar .center .title {
+    width: 340px;
+    position: absolute;
+    font-size: 50px;
+    font-weight: bold;
+    top: 12px;
+    left: 0;
+    right: 0;
+    margin: auto;
+    font-family: 'Black And White Picture', sans-serif;
+}
+
+.nav-bar .center .title > a {
+    color: #eee;
+    text-align: center;
+    color: cornflowerblue;
+}
+
+.nav-bar .center .main_page {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    right: 0;
+    top: 80px;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    font-family: 'Hi Melody', cursive;
+}
+
+.nav-bar .center .main_page > a {
+    margin: 10px 0;
+    padding: 0 20px;
+    font-size: 25px;
+    position: relative;
+    transition: .2s;
+}
+
+.nav-bar .center .main_page > a:hover {
+    transform: scale(1.1)
+}
+
+.nav-bar .center .main_page > a::before {
+    content: '';
+    height: 24px;
+    border-right: 1px solid #b4b2b2;
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+.nav-bar .center .main_page > a:first-child::before, .nav-bar .center .main_page > a:last-child::before {
+    content: '';
+    display: none;
+}
+
+
+.nav-bar .center .main_menu {
+    display: flex;
+    position: absolute;
+    right: 10px;
+    top: 0;
+}
+
+.nav-bar .center .main_menu a {
+    margin: auto;
+    font-size: 15px;
+    color: #444;
+    padding: 15px;
+    position: relative;
+}
+
+.nav-bar .center .main_menu a:hover {
+    text-decoration: underline;
+}
+
+.nav-bar .center .main_menu a::before {
+    content: '';
+    border-right: 1px solid #777;
+    height: 15px;
+    position: absolute;
+    right: 0;
+}
+
+.nav-bar .center .main_menu a:nth-child(2)::before {
+    content: '';
+    display: none;
+}
+
+
+/* login form */
+.login-form {
+    width: 500px;
+    height: 500px;
+    background: linear-gradient(to right, #acc3ef 0%, cornflowerblue 50%, #acc3ef 100%);
+    position: fixed;
+    top: 0;
+    bottom:0;
+    left:0;
+    right:0;
+    margin:auto;
+    border-radius: 10%;
+}
+
+.login-form > p {
+    display: block;
+    text-align: center;
+    padding: 30px 0 35px 0;
+    color: #fed;
+    font-size: 33px;
+    border-bottom: 1px solid #fed;
+    font-family: 'Hi Melody', cursive;
+}
+
+.login-form #id {
+    position: relative;
+    padding-top: 20px;
+
+}
+
+.login-form input {
+    display: block;
+    margin: 20px auto;
+    width: 90%;
+    height: 60px;
+    box-sizing: border-box;
+    border-radius: 5px;
+    border: 1px solid #999999;
+    padding: 20px;
+}
+
+
+.login-form #login {
+    width: 90%;
+    margin : 30px auto;
+    height: 50px;
+    background-color: yellowgreen;
+    border : 0;
+    cursor: pointer;
+    color : #fff;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 30px;
+}
+
+.login-form .login_bottom {
+    display: flex;
+    margin:20px auto;
+    text-align: center;
+}
+
+.login-form .login_bottom > a {
+    width: 100%;
+    margin-top: 20px;
+    color: #fed;
+    padding: 10px;
+    font-size:23px;
+    position: relative;
+    font-family: 'Black And White Picture', sans-serif;
+}
+
+.login-form .login_bottom > a::before {
+    content:'';
+    position: absolute;
+    left:0;
+    height: 20px;
+    border-right: 1px solid #fed;
+}
+
+.login-form .login_bottom > a:first-child::before {
+    content:'';
+    border-right:0;
+
+}
+

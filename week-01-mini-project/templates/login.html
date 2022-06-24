@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge"/>
+
+    <!--  open graph  -->
+    <meta property="og:type" content="website"/>
+    <meta property="og:site_name" content="bookReview"/>
+    <meta property="og:title" content="모두의 책 리뷰"/>
+    <meta property="og:description" content=""/>
+    <meta property="og:image" content=""/>
+    <meta property="og:url" content=""/>
+
+    <!-- css reset -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css"
+          integrity="sha512-NmLkDIU1C/C88wi324HBc+S2kLhi08PN5GDeUVVVC/BVt/9Izdsc9SVeVfA1UZbY3sHUlDSyRXhCzHfr6hmPPw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+
+    {#  SweetAlert  #}
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <!--  jquery  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+            integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+    <!--  css & js -->
+    <link rel="stylesheet" href="../static/css/login.css"/>
+    <script defer src="../static/js/login.js"></script>
+
+    {#  google-fonts-BnW-HM  #}
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Black+And+White+Picture&family=Hi+Melody&display=swap"
+          rel="stylesheet"/>
+
+    {#  favicon  #}
+    <link rel="icon" href="../static/image/favicon4.png"/>
+
+    <title>모두의 책 리뷰</title>
+</head>
+<body>
+<div class="wrap">
+    <!-- nav-bar -->
+    <div class="nav-bar">
+        <div class="center">
+            <div class="title">
+                <a href="/">모두의 책 리뷰</a>
+            </div>
+
+            <a class="logo_img1" href="/">
+                <img src="../static/image/logo3.png" alt="로고이미지"/>
+            </a>
+            <a class="logo_img2" href="/">
+                <img src="../static/image/logo2.png" alt="로고이미지"/>
+            </a>
+
+            <div class="main_page">
+                <a class="bestS" href="/bestSeller">베스트셀러</a>
+                <a class="dp_none" href=""></a>
+                <a class="prefer" href="/">추천리스트</a>
+            </div>
+
+            <div class="main_menu">
+                <a class="sign_in" href="/login">로그인</a>
+                <a class="join_mem" href="/joinMem">회원가입</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- login -->
+    <div class="login-form">
+        <p>모두의 책 리뷰에 오신 것을 환영합니다</p>
+        <div id="id">
+            <input type="text" placeholder="아이디를 입력해주세요."/>
+        </div>
+        <div id="pw">
+            <input type="password" placeholder="비밀번호를 입력해주세요."/>
+        </div>
+
+        <button id="login">로그인</button>
+        <hr>
+        <div class="login_bottom">
+            <a href="/joinMem">회원가입</a>
+            <a href="javascript:void(0)">아이디찾기</a>
+            <a href="javascript:void(0)">비밀번호찾기</a>
+        </div>
+    </div>
+
+</body>
+</html>
