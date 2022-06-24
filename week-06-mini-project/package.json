@@ -1,0 +1,32 @@
+{
+  "name": "together",
+  "version": "1.0.0",
+  "description": "항해99 4기 6주차 미니프로젝트 백엔드",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettify": "prettier --write *.js **/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://TnIoP@github.com/4pril91/Together.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/4pril91/Together/issues"
+  },
+  "homepage": "https://github.com/4pril91/Together#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.0.14",
+    "swagger-autogen": "^2.15.0",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.2.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.5.1"
+  }
+}
